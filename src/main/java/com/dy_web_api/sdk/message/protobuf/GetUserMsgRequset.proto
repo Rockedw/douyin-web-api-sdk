@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+// 主消息结构
+message GetUserMsgRequest {
+  int32 cmd = 1;                    // 2048
+  int32 sequence_id = 2;                    // 10271
+  string sdk_version = 3;                   // "1.1.3"
+  string token = 4;                   // hash值
+  int32 refer = 5;                    // 3
+  int32 inbox_type = 6;                    // 1
+  string build_number = 7;                   // "8aa2dcb:Detached: ..."
+  NestedMessage body = 8;            // 嵌套消息
+  string device_id = 9;                   // "0"
+  string device_platform = 11;                 // "douyin_pc"
+  repeated KeyValuePair header = 15;  // 重复的键值对
+  int32 auth_type = 18;                  // 4
+  string biz = 21;                 // "douyin_web"
+  string access = 22;                 // "web_sdk"
+  string ts_sign = 23;                 // ts签名
+  string sdk_cert = 24;                 // base64编码数据
+}
+
+// 嵌套消息（字段8）
+message NestedMessage {
+  InnerMessage field_2048 = 2048;
+}
+
+// 内层消息
+message InnerMessage {
+  int64 version = 1;     // 1754476454521293
+  int32 cmd_index = 2;     // 6823
+  int64 read_version = 4;     // 1754476143126322
+  string source = 5;    // ""
+}
+
+// 键值对消息（字段15使用）
+message KeyValuePair {
+  string key = 1;    // 键名
+  string value = 2;    // 键值
+}

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+// 主消息结构
+message GetUserMsgResponse {
+  int32 field1 = 1;          // 2048
+  int32 field2 = 2;          // 0
+  int32 field3 = 3;          // 0
+  string status = 4;         // "OK"
+  int32 field5 = 5;          // 1
+  ResponseData data = 6;     // 嵌套数据
+}
+
+message ResponseData {
+  MessageContainer container = 2048;
+}
+
+message MessageContainer {
+  MessageInfo message_info = 1;
+}
+
+message MessageInfo {
+  int64 message_id = 1;      // 1754559264037877
+  MessageContent content = 2;
+}
+
+message MessageContent {
+  int64 content_id = 1;      // 7475180019992511030
+  ContentDetails details = 2;
+}
+
+message ContentDetails {
+  string identifier = 1;     // "0:1:4213783596110564:4213783596110564"
+  int32 type = 2;           // 1
+  int64 timestamp = 3;       // 7535772346519520828
+  int64 create_time = 4;     // 1672502405810000
+  int64 user_id = 5;         // 7475180019992511030
+  int32 status_code = 6;     // 105
+  int64 share_id = 7;        // 4213783596110564
+  string json_data = 8;      // JSON字符串数据
+}
+

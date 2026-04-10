@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+
+// 主消息结构
+message DyStrangerMsgResponse {
+  int32 code = 1;          // 1001
+  int32 sub_code = 2;      // 10009
+  int32 error_code = 3;    // 0
+  string status = 4;       // "OK"
+  int32 version = 5;       // 1
+  MessageData data = 6;
+  string trace_id = 7;     // "2025090911284822A05EEE65A5683826D9"
+  int64 timestamp = 10;    // 1757388528414
+  int64 server_time = 11;  // 1757388528547
+  int64 user_id = 13;      // 88214454208
+}
+
+// 消息数据结构
+message MessageData {
+  MessageInfo message_info = 1000;
+}
+
+// 消息信息
+message MessageInfo {
+  int32 msg_type = 1;      // 1
+  int32 msg_status = 2;    // 1
+  int32 content_type = 3;  // 4
+  repeated MessageContent content = 4;
+}
+
+// 消息内容
+message MessageContent {
+  int64 conversation_short_id = 1;           // 7547914245434769966
+  int32 msg_version = 2;          // 1
+  MessageDetail detail = 3;
+  string conversation_id = 4;     // "0:1:88214454208:1260514176416537"
+  repeated UserInfo users = 5;
+}
+
+// 消息详情
+message MessageDetail {
+  string conversation_id = 1;  // "0:1:88214454208:1260514176416537"
+  int32 conversation_type = 2;            // 1
+  int64 server_message_id = 3;       // 7547914400348161594
+  int64 create_time = 4;             // 1672502400020000
+  int64 conversation_short_id = 5;               // 7547914245434769966
+  int32 content_type = 6;            // 7
+  int64 conversation_id_int = 7;     // 1260514176416537
+  string text_content = 8;           // JSON格式的文本内容
+  repeated MessageProperty properties = 9;
+  int64 client_create_time = 10;     // 1757385773075
+  int32 read_status = 11;            // 0
+  int32 deleted = 12;                // 0
+  int64 create_time_ns = 13;         // 1672502400020000000
+  string receiver_sec_uid = 14;        // "MS4wLjABAAAA_2xB1P-LTi8lydSoMqX7wivk1I6miMQAfkHaTPExbZ-WNYQSDdOe3gxdC56xG5Yy"
+  int32 message_status = 17;         // 2
+}
+
+// 消息属性
+message MessageProperty {
+  string key = 1;
+  string value = 2;
+}
+
+// 属性键值对
+message PropertyKeyValue {
+  bytes key_bytes = 12;  // 0x786432636e79733a
+}
+
+// 用户信息
+message UserInfo {
+  int64 user_id = 1;
+  string sec_uid = 5;
+}

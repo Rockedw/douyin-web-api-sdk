@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+// 抖音消息发送响应
+message DySendMsgResponse {
+  // 响应状态码 (1: 100)
+  int32 status_code = 1;
+  
+  // 响应数据大小或计数 (2: 12086)
+  int32 data_size = 2;
+  
+  // 错误码 (3: 0)
+  int32 error_code = 3;
+  
+  // 状态消息 (4: "OK")
+  string status_message = 4;
+  
+  // 额外状态码 (5: 0)
+  int32 extra_status = 5;
+  
+  // 消息数据 (6: {...})
+  MessageData message_data = 6;
+  
+  // 请求ID或追踪ID (7: "20250916155236CF85A0DA1140C8CAD893")
+  string request_id = 7;
+  
+  // 服务器时间戳1 (10: 1758009156460)
+  int64 server_timestamp_1 = 10;
+  
+  // 服务器时间戳2 (11: 1758009156677)
+  int64 server_timestamp_2 = 11;
+  
+  // 用户ID或会话ID (13: 4213783596110564)
+  int64 user_id = 13;
+}
+
+// 消息数据结构
+message MessageData {
+  // 子消息数据 (100: {...})
+  MessageInfo message_info = 100;
+}
+
+// 消息信息
+message MessageInfo {
+  // 消息ID (1: 7550591814018582074)
+  int64 message_id = 1;
+  
+  // 消息状态 (3: 0)
+  int32 message_status = 3;
+  
+  // 客户端消息ID (4: "ee5e9137-912c-428f-8ac8-e79ddd2d77fc")
+  string client_message_id = 4;
+  
+  // 消息类型或附加状态 (5: 0)
+  int32 message_type = 5;
+
+  string extra_info = 6; // 额外信息字段
+}

@@ -1,0 +1,83 @@
+syntax = "proto3";
+option java_multiple_files = true;
+
+message Header {
+  string key = 1;
+  string value = 2;
+}
+
+message PushFrame {
+  uint64 seqID = 1;
+  uint64 logID = 2;
+  int32 service = 3;
+  int32 method = 4;
+  repeated Header headers = 5;
+  string  payloadEncoding = 6;
+  string payloadType = 7;
+  bytes  payload = 8;
+  string lodIdNew = 9;
+  string serverTiming = 10;
+  string msgID = 11;
+  int32 frameType = 12;
+}
+
+message ResponseHeader {
+  string key = 1;
+  string value = 2;
+}
+
+message Response {
+  int32 cmd = 1;
+  int64 sequenceId = 2;
+  int32 statusCode = 3;
+  string  errorDesc = 4;
+  int32 inboxType = 5;
+  ResponseBody body = 6;
+  string logId = 7;
+//  repeated Entity headers = 8;
+  int64 startTimestamp = 9;
+  int64 serverExecutionEndTime = 10;
+}
+
+message ResponseBody {
+  NewMessageNotify hasNewMessageNotify = 500;
+
+}
+
+message NewMessageNotify {
+  string  conversationId = 2;
+  int32 conversationType = 3;
+  int32 notifyType = 4;
+  MessageBody message = 5;
+  int64 previousCursor = 6;
+  int64 nextCursor = 7;
+  int64 indexInConversation = 8;
+  int64 indexInConversation_v2 = 9;
+  int64 conversationVersion = 10;
+  int64 previousConversationVersion = 11;
+  int64 cmdMessageIndex = 12;
+  int32 badgeCount = 13;
+}
+
+message Entity {
+  string key = 1;
+  string value = 2;
+}
+
+message MessageBody {
+  string conversationId = 1;
+  int32 conversationType = 2;
+  int64 serverMessageId = 3;
+  int64 indexInConversation = 4;
+  int64 conversationShortId = 5;
+  int32 messageType = 6;
+  int64 sender = 7;
+  string content = 8;
+  repeated Entity ext = 9;
+  int64 createTime = 10;
+  int64 version = 11;
+  int32 status = 12;
+  int64 orderInConversation = 13;
+  string secSender = 14;
+  int64 indexInConversationV2 = 17;
+}

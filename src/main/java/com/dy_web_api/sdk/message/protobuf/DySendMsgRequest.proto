@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+// 主消息结构
+message DySendMsgRequest {
+  int32 cmd = 1;                        // 原始数据: 1: 100 -> cmd: 100
+  int32 sequence_id = 2;            // 原始数据: 2: 10092 -> sequence_id.low: 10149
+  string sdk_version = 3;               // 原始数据: 3: "1.1.3" -> sdk_version: "1.1.3"
+  string token = 4;                     // 原始数据: 4: "hash.i5YLsiffs71hzNJ98bqpUuOZ9RNPGSnMRKKNKSCDts8=" -> token: "hash.i5YLsiffs71hzNJ98bqpUuOZ9RNPGSnMRKKNKSCDts8="
+  int32 refer = 5;                      // 原始数据: 5: 3 -> refer: 3
+  int32 inbox_type = 6;                 // 原始数据: 6: 0 -> inbox_type: 0
+  string build_number = 7;              // 原始数据: 7: "8aa2dcb:Detached: 8aa2dcb88b41538885168e4afbbd2b6bac8aefb2" -> build_number: "8aa2dcb:Detached: 8aa2dcb88b41538885168e4afbbd2b6bac8aefb2"
+  SendMessageBody send_message_body = 8; // 原始数据: 8 { ... } -> body.send_message_body
+  string device_id = 9;                 // 原始数据: 9: "0" -> device_id: "0"
+  string device_platform = 11;         // 原始数据: 11: "douyin_pc" -> device_platform: "douyin_pc"
+  repeated HeaderField headers = 15;    // 原始数据: 15 { ... } (多个) -> headers
+  int32 auth_type = 18;                 // 原始数据: 18: 4 -> auth_type: 4
+  string biz = 21;                      // 原始数据: 21: "douyin_web" -> biz: "douyin_web"
+  string access = 22;                   // 原始数据: 22: "web_sdk" -> access: "web_sdk"
+  string ts_sign = 23;                  // 原始数据: 23: "ts.2.82d2551be4d2c473caf5cc81da7f977dde29bf5d8c467ba820f6e156a2c858d1c4fbe87d2319cf05318624ceda14911ca406dedbebeddb2e30fce8d4fa02575d" -> ts_sign
+  string sdk_cert = 24;                 // 原始数据: 24: "cHViLkJNOEJyc3BLR0x4WndWSngzVGN0VlBkaTZJN1JZaU9rQlVnRnNybmh2NjQydHpaSjRwSUwvdnljWCtFdkF4YndIeHZNdzVXMTlYTU11QUlWME8yOGpnVT0=" -> sdk_cert
+  string request_sign = 25;             // 原始数据: 25: "MEUCIQCoDPvPfnkN8JAzTrBcjYK5swQQ0HHbi8EUjasot4KfDgIgRzP0wkzNb4gvi0UmO1nzIW7FHF28vXuvKPBelJC+2do=" -> reuqest_sign (修正拼写)
+}
+
+message SendMessageBody{
+  SendMessageContent send_message_content = 100;
+  CreateSessionRequest create_session_request = 609;
+}
+// 创建会话请求结构
+message CreateSessionRequest {
+  string session_type = 1;
+  string to_user = 2;
+  int32 from_user = 3;
+}
+
+// 发送消息体结构
+message SendMessageContent {
+  string conversation_id = 1;           // 原始数据: 1: "0:1:3296813943621225:4213783596110564" -> conversation_id
+  int32 conversation_type = 2;          // 原始数据: 2: 1 -> conversation_type: 1
+  int64 conversation_short_id = 3;  // 原始数据: 3: 7475576930293580298 -> conversation_short_id.low: 1564541450
+  string content = 4;                   // 原始数据: 4: "{\"mention_users\":[],\"aweType\":700,\"richTextInfos\":[],\"text\":\"123\"}" -> content: "{\"mention_users\":[],\"aweType\":700,\"richTextInfos\":[],\"text\":\"你好\"}"
+  repeated ExtField ext_fields = 5;     // 原始数据: 5 { ... } (多个键值对) -> ext
+  int32 message_type = 6;               // 原始数据: 6: 7 -> message_type: 7
+  string ticket = 7;                    // 原始数据: 7: "1laWxwIOwRJOwVmkhaFQis6Md5aJIS4CHBhxIcb6lmhzrjfREq83DMwtH2Z7WLyp0sX21r8vbSI4OSfD6DZW9JcWCaZCCKNawNX1ZC5ad24SQfPrVnqFJXsI4" -> ticket
+  string client_message_id = 8;        // 原始数据: 8: "4c92805a-9085-4cb4-9757-634515bc9ffb" -> client_message_id: "3942c6bb-ebb2-45d1-8a07-3cefddb53fd0"
+}
+
+// 扩展字段结构 - 对应 ext 对象
+message ExtField {
+  string key = 1;                       // 原始数据示例: 1: "s:mentioned_users" -> ext 对象的 key
+  string value = 2;                     // 原始数据示例: 2: "" -> ext 对象的 value
+}
+// 原始数据中的具体扩展字段:
+// "s:mentioned_users": ""
+// "s:client_message_id": "3942c6bb-ebb2-45d1-8a07-3cefddb53fd0"
+// "s:stime": "1756266832716.4734"
+
+// Header字段 - 对应 headers 对象
+message HeaderField {
+  string field_name = 1;                // 原始数据示例: 1: "identity_security_token" -> headers 对象的 key
+  string field_value = 2;               // 原始数据示例: 2: "{\"token\":\"CjjX5qrW5Biwv4xi...\"}" -> headers 对象的 value
+}

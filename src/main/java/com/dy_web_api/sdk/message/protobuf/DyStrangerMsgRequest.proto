@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+// 抖音聊天服务请求消息
+// 用例数据: 获取陌生人会话列表
+message DyStrangerConversationRequest {
+  int32 cmd = 1;                    // 1001 - 命令类型
+  int32 sequence_id = 2;            // 10009 - 序列ID
+  string sdk_version = 3;           // "1.1.3" - SDK版本
+  string token = 4;                 // "hash.JIOs0hSD8xtcHymOMZM2PwNbmL36mNFae69GAOmgzuw=" - 认证令牌
+  int32 refer = 5;                  // 3 - 引用类型
+  int32 inbox_type = 6;             // 1 - 收件箱类型
+  string build_number = 7;          // "8aa2dcb:Detached: 8aa2dcb88b41538885168e4afbbd2b6bac8aefb2" - 构建号
+  GetStrangerConversationBody body = 8; // 获取陌生人会话请求体
+  string device_id = 9;             // "0" - 设备ID
+  string device_platform = 11;     // "douyin_pc" - 设备平台
+  repeated HeaderField headers = 15; // 请求头字段列表
+  int32 auth_type = 18;             // 4 - 认证类型
+  string biz = 21;                  // "douyin_web" - 业务标识
+  string access = 22;               // "web_sdk" - 访问方式
+  string ts_sign = 23;              // "ts.2.dba2417db431dd81e413c98572f214b2c5c1a6a9a2b83de2419957eb1169cb54c4fbe87d2319cf05318624ceda14911ca406dedbebeddb2e30fce8d4fa02575d" - 时间戳签名
+  string sdk_cert = 24;             // "cHViLkJFb0l0Q0YrTVJhWHEraHViL2NVa1ZJZGcwdkprSmJvek1admVkTjJPamdndkZLcytPTkJUSktOdmNybkZZQ29pckhHT0FrdC9jR0VHZnlLK0FCQVRjdz0=" - SDK证书
+}
+
+// 获取陌生人会话请求体
+// 用例数据: 字段1000包含分页和显示配置
+message GetStrangerConversationBody {
+  ConversationQuery query_1000 = 1000; // 会话查询配置
+}
+
+// 会话查询配置
+// 用例数据: 从头开始获取1条记录，显示未读总数
+message ConversationQuery {
+  int32 cursor = 1;                 // 0 - 游标位置，用于分页
+  int32 count = 2;                  // 1 - 请求数量
+  int32 show_total_unread = 3;      // 1 - 是否显示未读总数 (1=true, 0=false)
+}
+
+// 请求头字段
+message HeaderField {
+  string key = 1;                   // 字段名
+  string value = 2;                 // 字段值
+
+  // 用例数据示例:
+  // session_aid: "6383"
+  // session_did: "0"
+  // app_name: "douyin_pc"
+  // priority_region: "cn"
+  // user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+  // cookie_enabled: "true"
+  // browser_language: "zh-CN"
+  // browser_platform: "MacIntel"
+  // browser_name: "Mozilla"
+  // browser_version: "5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+  // browser_online: "true"
+  // screen_width: "3440"
+  // screen_height: "1440"
+  // referer: "https://www.douyin.com/user/self?from_tab_name=main"
+  // timezone_name: "Asia/Shanghai"
+  // deviceId: "0"
+  // webid: "7360971731131565583"
+  // fp: "verify_md4cl3m6_X9WoiCOV_mno6_4K1l_By6d_uxpWZi9eFXga"
+  // is-retry: "0"
+}
+

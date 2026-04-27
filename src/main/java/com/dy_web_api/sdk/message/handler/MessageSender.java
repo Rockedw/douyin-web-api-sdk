@@ -13,6 +13,7 @@ import com.dy_web_api.sdk.message.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -37,6 +38,53 @@ public class MessageSender {
     private static final String IMAGE_MESSAGE_TEMPLATE = "CGQQvU4aBTEuMS4zIjFoYXNoLkpJT3MwaFNEOHh0Y0h5bU9NWk0yUHdOYm1MMzZtTkZhZTY5R0FPbWd6dXc9KAMwADo6OGFhMmRjYjpEZXRhY2hlZDogOGFhMmRjYjg4YjQxNTM4ODg1MTY4ZTRhZmJiZDJiNmJhYzhhZWZiMkKcBaIGmAUKIDA6MTo4ODIxNDQ1NDIwODozMjk2ODEzOTQzNjIxMjI1EAEYioSFitPUltpnItECeyJyZXNvdXJjZV91cmwiOnsib2lkIjoidG9zLWNuLW8tMDAwNjEvZjE0MjBiMzk4NTRmNGIyOTg3MTUzMWUyMTljY2Y3MWQiLCJza2V5IjoiZjFmZjUxOTUxYjhkZjNjNDg3ODRlZjk3Njc3MDY1MWM5NjExY2RhN2RhNjY1ZDUxMjRhOGJjZWZkMzg4N2QwZSIsImRhdGFfc2l6ZSI6MTg1NjIyOCwibWQ1IjoiZmQyNDlmM2E2ZjUyYWY2YjBmOTQ0YTFjYmIzNjQ5ODAifSwiY292ZXJfaGVpZ2h0IjoyMTIwLCJjb3Zlcl93aWR0aCI6MTE5MCwiY2hlY2tfcGljcyI6W10sIm1kNSI6ImZkMjQ5ZjNhNmY1MmFmNmIwZjk0NGExY2JiMzY0OTgwIiwiZnJvbV9nYWxsZXJ5IjoxLCJhd2VUeXBlIjoyNzAyfSoVChFzOm1lbnRpb25lZF91c2VycxIAKjsKE3M6Y2xpZW50X21lc3NhZ2VfaWQSJDQxNzE4NjFjLTRhZDItNGMxMC04MWQ5LWExOGNmNWE0ZTBlNiodCgdzOnN0aW1lEhIxNzU3NTcxNzgzOTI4Ljc0MzIwGzp5MWxhV3h3SU93UkpPd1Zta2tBS01vcHFLazcwVndoYmNiNzdxN1c4STNWMXRWMGF0cmtxWk4zZGRzZmNUTXdDem1ZaU1OS0pIZm9ZbHM3OUtQcVhMdUtYU3JKd2M4Tlp2ZFdtYUxEeVllUUdUTFhVN0RzU21Dald3U0IkNDE3MTg2MWMtNGFkMi00YzEwLTgxZDktYTE4Y2Y1YTRlMGU2SgEwWglkb3V5aW5fcGN64gEKF2lkZW50aXR5X3NlY3VyaXR5X3Rva2VuEsYBeyJ0b2tlbiI6IkNqYkk3aEJXV1JLSFIxc2RxVmlzWWRDSFcyd2REVU5VazBGRXYtRHhxclpTZVdBVWxzeFVhVG5ua25uYWZidlJkTVMyOWdudk5vd2FTZ284QUFBQUFBQUFBQUFBQUU5MnRjYUh4eUs0NU9SbDVXbFdYaVFVY3VSTUNOOG52a1RUOEFSSG55NXRWUFNTSmNYbFQ4VTg0MEZ6MHdJeE5yZ1ZFSkx4LXcwWTlySFJiQ0FDSWdFRDZtVXN6USJ9ejIKG2lkZW50aXR5X3NlY3VyaXR5X2RldmljZV9pZBITNzM2MDk3MTczMTEzMTU2NTU4M3odChVpZGVudGl0eV9zZWN1cml0eV9haWQSBDYzODN6EwoLc2Vzc2lvbl9haWQSBDYzODN6EAoLc2Vzc2lvbl9kaWQSATB6FQoIYXBwX25hbWUSCWRvdXlpbl9wY3oVCg9wcmlvcml0eV9yZWdpb24SAmNueoMBCgp1c2VyX2FnZW50EnVNb3ppbGxhLzUuMCAoTWFjaW50b3NoOyBJbnRlbCBNYWMgT1MgWCAxMF8xNV83KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTM5LjAuMC4wIFNhZmFyaS81MzcuMzZ6FgoOY29va2llX2VuYWJsZWQSBHRydWV6GQoQYnJvd3Nlcl9sYW5ndWFnZRIFemgtQ056HAoQYnJvd3Nlcl9wbGF0Zm9ybRIITWFjSW50ZWx6FwoMYnJvd3Nlcl9uYW1lEgdNb3ppbGxheoABCg9icm93c2VyX3ZlcnNpb24SbTUuMCAoTWFjaW50b3NoOyBJbnRlbCBNYWMgT1MgWCAxMF8xNV83KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTM5LjAuMC4wIFNhZmFyaS81MzcuMzZ6FgoOYnJvd3Nlcl9vbmxpbmUSBHRydWV6FAoMc2NyZWVuX3dpZHRoEgQzNDQwehUKDXNjcmVlbl9oZWlnaHQSBDE0NDB6CwoHcmVmZXJlchIAeh4KDXRpbWV6b25lX25hbWUSDUFzaWEvU2hhbmdoYWl6DQoIZGV2aWNlSWQSATB6HAoFd2ViaWQSEzczNjA5NzE3MzExMzE1NjU1ODN6OgoCZnASNHZlcmlmeV9tZDRjbDNtNl9YOVdvaUNPVl9tbm82XzRLMWxfQnk2ZF91eHBXWmk5ZUZYZ2F6DQoIaXMtcmV0cnkSATCQAQSqAQpkb3V5aW5fd2VisgEHd2ViX3Nka7oBhQF0cy4yLmRiYTI0MTdkYjQzMWRkODFlNDEzYzk4NTcyZjIxNGIyYzVjMWE2YTlhMmI4M2RlMjQxOTk1N2ViMTE2OWNiNTRjNGZiZTg3ZDIzMTljZjA1MzE4NjI0Y2VkYTE0OTExY2E0MDZkZWRiZWJlZGRiMmUzMGZjZThkNGZhMDI1NzVkwgF8Y0hWaUxrSkZiMGwwUTBZclRWSmhXSEVyYUhWaUwyTlZhMVpKWkdjd2RrcHJTbUp2ZWsxYWRtVmtUakpQYW1kbmRrWkxjU3RQVGtKVVNrdE9kbU55YmtaWlEyOXBja2hIVDBGcmRDOWpSMFZIWm5sTEswRkNRVlJqZHowPcoBYE1FWUNJUUNGRnI3UjNPVTduc3J1eldnU25HMDRzSWJTWjQ3cis3citlMFJBZVpqYTdBSWhBTWwxVW95b09lYjRyNWhmREpVdU83K3JOeWlrZ3VoWEhBQlAxN3BLMFFjLw==";
     private static final String DOUYIN_CARD_TEMPLATE = "CGQQ+n0aBTEuMS4zIjFoYXNoLjlZRzdUQS81QldnTGE5YjQ3Q2pidFNrZ3lYdnczZUd0VWVEbDR4cm1xNzg9KAMwADo6OGFhMmRjYjpEZXRhY2hlZDogOGFhMmRjYjg4YjQxNTM4ODg1MTY4ZTRhZmJiZDJiNmJhYzhhZWZiMkKYDaIGlA0KEzc1MzU2NTgxNDQ4NTMxNDgyMTgQAhi6hIHGg6WCymgi2gp7ImF3ZVR5cGUiOjgwMCwiY29udGVudF90aXRsZSI6IuW9k+S9oOW8gOWtpuW4puedgOS4gOWkp+WghuihjOadjui/lOagoei/mOimgeeIrOalvOair+aXtiDkuI3ovpvoi6bvvIzlkb3oi6bllYouLi4j5aSn5a2m55SfICPnsr7npZ7nirbmgIFiZWxpa2UgI+WGheWuuei/h+S6juecn+WuniAj5byA5a2mICPkuovkuovlj6/miJA1OOWQjOWfjiIsImNvdmVyX2hlaWdodCI6MTQ0MCwiY292ZXJfd2lkdGgiOjEwODAsIml0ZW1JZCI6Ijc0NzQ4NjUwMjEzNDA2NTA4MDYiLCJjb3Zlcl91cmwiOnsidXJsX2xpc3QiOlsiaHR0cHM6Ly9wMy1wYy1zaWduLmRvdXlpbnBpYy5jb20vdG9zLWNuLWktZHkvYjAwZmU5ZTFmN2QyNGI0N2E4ZGNmMjcxMGUzNjY3ZDF+dHBsdi1keS1jcm9wY2VudGVyOjMyMzo0MzAuanBlZz9iaXpfdGFnPXBjd2ViX2NvdmVyJmZyb209MzI3ODM0MDYyJmxrM3M9MTM4YTU5Y2Umcz1QYWNrU291cmNlRW51bV9QVUJMSVNIJnNjPWNvdmVyJnNlPXRydWUmc2g9MzIzXzQzMCZ4LWV4cGlyZXM9MjA3MzM1MTYwMCZ4LXNpZ25hdHVyZT02VklxdkRvbVNNR1Q4R0luT3lkS0clMkZGV2FPOCUzRCIsImh0dHBzOi8vcDMtcGMtc2lnbi5kb3V5aW5waWMuY29tL29iai90b3MtY24taS1keS9iMDBmZTllMWY3ZDI0YjQ3YThkY2YyNzEwZTM2NjdkMT9iaXpfdGFnPXBjd2ViX2NvdmVyJmZyb209MzI3ODM0MDYyJmxrM3M9MTM4YTU5Y2Umcz1QYWNrU291cmNlRW51bV9QVUJMSVNIJnNjPWNvdmVyJnNlPWZhbHNlJngtZXhwaXJlcz0yMDczMzUxNjAwJngtc2lnbmF0dXJlPUI3JTJCbHpxTUpHbzN5eGo5TzRYZ3R4SW9iMzZNJTNEIiwiaHR0cHM6Ly9wOS1wYy1zaWduLmRvdXlpbnBpYy5jb20vb2JqL3Rvcy1jbi1pLWR5L2IwMGZlOWUxZjdkMjRiNDdhOGRjZjI3MTBlMzY2N2QxP2Jpel90YWc9cGN3ZWJfY292ZXImZnJvbT0zMjc4MzQwNjImbGszcz0xMzhhNTljZSZzPVBhY2tTb3VyY2VFbnVtX1BVQkxJU0gmc2M9Y292ZXImc2U9ZmFsc2UmeC1leHBpcmVzPTIwNzMzNTE2MDAmeC1zaWduYXR1cmU9S2k2UExNMjdoakdnZU1UWjNxJTJCMzh1eWlIRzglM0QiXSwidXJpIjoidG9zLWNuLWktZHkvYjAwZmU5ZTFmN2QyNGI0N2E4ZGNmMjcxMGUzNjY3ZDEifSwiY29udGVudF90aHVtYiI6eyJ1cmxfbGlzdCI6WyJodHRwczovL3AzLXBjLmRvdXlpbnBpYy5jb20vYXdlbWUvMTAweDEwMC9hd2VtZS1hdmF0YXIvdG9zLWNuLWF2dC0wMDE1XzY4NjM0YjJmODZjM2FjNzcxOWY1ZjE1MDU3ZWFmZGUwLmpwZWc/ZnJvbT0zMjc4MzQwNjIiXSwidXJpIjoiMTAweDEwMC9hd2VtZS1hdmF0YXIvdG9zLWNuLWF2dC0wMDE1XzY4NjM0YjJmODZjM2FjNzcxOWY1ZjE1MDU3ZWFmZGUwIn0sInVpZCI6IjQyMTM3ODM1OTYxMTA1NjQifSoVChFzOm1lbnRpb25lZF91c2VycxIAKjsKE3M6Y2xpZW50X21lc3NhZ2VfaWQSJGI0MDEyMmZkLTMzY2ItNDJiZS04NWM3LWI0YTE2YWNiZDVhYSodCgdzOnN0aW1lEhIxNzU4MDc3Mzg1Mzk0LjMzNTIwCDp5MWxhV3h3SU93UkpPd1Zta2tjYzZBQlBsRlcwckwzWUR6TWpWSEFPaEhMSDdFUTNMaEhBNHJ6Z1hPUkpTTFlYUk5xQXZzekZpTEVicndLdmJEd3FDWmMzQXpmTE1GWWlYRXZmaDdJRjRudll2YTRMSncxWXUwY2RSQUIkYjQwMTIyZmQtMzNjYi00MmJlLTg1YzctYjRhMTZhY2JkNWFhSgEwWglkb3V5aW5fcGN65AEKF2lkZW50aXR5X3NlY3VyaXR5X3Rva2VuEsgBeyJ0b2tlbiI6IkNqaEZlY1dyVm11elBEUlE3RU9IWG0yUi1STWlpUFFtamRPbm1adDNmQ0xlM3lWOE1KYWlfWktGdms3YWVYVmxScFNxUDJEUFZVWnMwQnBLQ2p3QUFBQUFBQUFBQUFBQVQzdUozeVNXNHNGTlVxSjFxeVpTWHhCY3Z1RXNkT3YtZkQ1aUJRS3NUZi03N052MWNSOHdPUkd0WTljemNxV2l5YlVRN2JIOERSajJzZEZzSUFJaUFRUFhlcXJsIn16MgobaWRlbnRpdHlfc2VjdXJpdHlfZGV2aWNlX2lkEhM3NTUwNTA4MDA1ODg5MTk3NTg3eh0KFWlkZW50aXR5X3NlY3VyaXR5X2FpZBIENjM4M3oTCgtzZXNzaW9uX2FpZBIENjM4M3oQCgtzZXNzaW9uX2RpZBIBMHoVCghhcHBfbmFtZRIJZG91eWluX3BjehUKD3ByaW9yaXR5X3JlZ2lvbhICY256gwEKCnVzZXJfYWdlbnQSdU1vemlsbGEvNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDEwXzE1XzcpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMzkuMC4wLjAgU2FmYXJpLzUzNy4zNnoWCg5jb29raWVfZW5hYmxlZBIEdHJ1ZXoZChBicm93c2VyX2xhbmd1YWdlEgV6aC1DTnocChBicm93c2VyX3BsYXRmb3JtEghNYWNJbnRlbHoXCgxicm93c2VyX25hbWUSB01vemlsbGF6gAEKD2Jyb3dzZXJfdmVyc2lvbhJtNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDEwXzE1XzcpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMzkuMC4wLjAgU2FmYXJpLzUzNy4zNnoWCg5icm93c2VyX29ubGluZRIEdHJ1ZXoUCgxzY3JlZW5fd2lkdGgSBDM0NDB6FQoNc2NyZWVuX2hlaWdodBIEMTQ0MHo+CgdyZWZlcmVyEjNodHRwczovL3d3dy5kb3V5aW4uY29tL3VzZXIvc2VsZj9mcm9tX3RhYl9uYW1lPW1haW56HgoNdGltZXpvbmVfbmFtZRINQXNpYS9TaGFuZ2hhaXoNCghkZXZpY2VJZBIBMHocCgV3ZWJpZBITNzU1MDUwODAwNTg4OTE5NzU4N3o6CgJmcBI0dmVyaWZ5X21mbHhuaGQ3X0c5MXNLRjZ3X3F3ZzJfNFFvZF9BeWp4X2lhNDc3YnBTaUdkSnoNCghpcy1yZXRyeRIBMJABBKoBCmRvdXlpbl93ZWKyAQd3ZWJfc2RrugGFAXRzLjIuY2RhOTZmYWZlZjhiZTkyYTFkMzg0MjFlYzQ2YmJjM2QzYjQwZjYwZDRjZjZmYTFjMjU3MDY5ZDgzZmI1ZDgxN2M0ZmJlODdkMjMxOWNmMDUzMTg2MjRjZWRhMTQ5MTFjYTQwNmRlZGJlYmVkZGIyZTMwZmNlOGQ0ZmEwMjU3NWTCAXxjSFZpTGtKTk5saHZiblJGUmpWR1MyOUVjMHRUTDNaWlRWZENaMjg1YlhndmJETmhPSFJhVUV4SWMyNHpOVlpsY2paeVNYZDFVUzhyUnpneWFTdFlObmxWUVhseFptNU9SWE5GZVRGWEx6Z3lMelV5ZVZwaGJHVklPRDA9ygFgTUVVQ0lIZWlHTjV6TnlTYkYra2h3V21zQWtnQXB2dERNalhScU5Xam9NdnhCR29lQWlFQWs4SHlZeld2OUgzamFkVVFDanZxN2h5SDdUYWF3Uy9jSG1pOG11OWpTems9";
     private static final String CREATE_CONVERSATION_TEMPLATE = "COEEEJtOGgUxLjEuMyIxaGFzaC5GbmNhMEVkK1hpVUI4QVgyUksxMFcyT0lReDk1a0xGTDR1elAxTG04a3VrPSgDMAA6OjhhYTJkY2I6RGV0YWNoZWQ6IDhhYTJkY2I4OGI0MTUzODg4NTE2OGU0YWZiYmQyYjZiYWM4YWVmYjJCFoomEwgBEL3esKm2jOYDEPrpoK+7zAVKATBaCWRvdXlpbl9wY3oTCgtzZXNzaW9uX2FpZBIENjM4M3oQCgtzZXNzaW9uX2RpZBIBMHoVCghhcHBfbmFtZRIJZG91eWluX3BjehUKD3ByaW9yaXR5X3JlZ2lvbhICY256gwEKCnVzZXJfYWdlbnQSdU1vemlsbGEvNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDEwXzE1XzcpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMzkuMC4wLjAgU2FmYXJpLzUzNy4zNnoWCg5jb29raWVfZW5hYmxlZBIEdHJ1ZXoZChBicm93c2VyX2xhbmd1YWdlEgV6aC1DTnocChBicm93c2VyX3BsYXRmb3JtEghNYWNJbnRlbHoXCgxicm93c2VyX25hbWUSB01vemlsbGF6gAEKD2Jyb3dzZXJfdmVyc2lvbhJtNS4wIChNYWNpbnRvc2g7IEludGVsIE1hYyBPUyBYIDEwXzE1XzcpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMzkuMC4wLjAgU2FmYXJpLzUzNy4zNnoWCg5icm93c2VyX29ubGluZRIEdHJ1ZXoUCgxzY3JlZW5fd2lkdGgSBDM0NDB6FQoNc2NyZWVuX2hlaWdodBIEMTQ0MHoLCgdyZWZlcmVyEgB6HgoNdGltZXpvbmVfbmFtZRINQXNpYS9TaGFuZ2hhaXoNCghkZXZpY2VJZBIBMHocCgV3ZWJpZBITNzM2MDk3MTczMTEzMTU2NTU4M3o6CgJmcBI0dmVyaWZ5X21ma3dvdDBpX3FpZnBES2liX1N4eE1fNGJtcV9BS0Q4X2tvUTRFYTRZT3lrd3oNCghpcy1yZXRyeRIBMJABBKoBCmRvdXlpbl93ZWKyAQd3ZWJfc2RrugGFAXRzLjIuNWZjNTU4ZmI5NGFmYjVmNzhmODI2OTQ1NmQwMDQ1NzU3Zjg5ZTVkMDdhMGQ2YWVmYTQ2OTM2NmQxMTJkMWJlOGM0ZmJlODdkMjMxOWNmMDUzMTg2MjRjZWRhMTQ5MTFjYTQwNmRlZGJlYmVkZGIyZTMwZmNlOGQ0ZmEwMjU3NWTCAXxjSFZpTGtKRmIwbDBRMFlyVFZKaFdIRXJhSFZpTDJOVmExWkpaR2N3ZGtwclNtSnZlazFhZG1Wa1RqSlBhbWRuZGtaTGNTdFBUa0pVU2t0T2RtTnlia1paUTI5cGNraEhUMEZyZEM5alIwVkhabmxMSzBGQ1FWUmpkejA9ygFgTUVZQ0lRQ0FtU2FFWkYwTi83VnJrQVlVYTRPWFIxV0JWMlE0WDFSWDFwbkNEYktFcXdJaEFKOGNLNHBkekNoSTVaZ1NoSFJGUkVtRXFKVFQvbnRZMUVrT1A1UGxYdkVF";
+    private static final String DYNAMIC_EMOJI_CONFIG_RESOURCE = "dynamic-emoji-config.json";
+    private static final Map<String, DynamicEmojiConfig> DYNAMIC_EMOJI_CONFIG_MAP = loadDynamicEmojiConfigMap();
+
+    private static final class DynamicEmojiConfig {
+        private final String displayName;
+        private final String staticUrl;
+        private final String staticType;
+        private final String animateUrl;
+        private final String animateType;
+        private final int width;
+        private final int height;
+        private final int resourceType;
+        private final int version;
+        private final int bizType;
+        private final String lightInteraction;
+        private final Long visibleStartTime;
+        private final Long visibleEndTime;
+
+        private DynamicEmojiConfig(String displayName, String staticUrl, String staticType,
+                                   String animateUrl, String animateType, int width, int height,
+                                   int resourceType, int version, int bizType,
+                                   String lightInteraction, Long visibleStartTime, Long visibleEndTime) {
+            this.displayName = displayName;
+            this.staticUrl = staticUrl;
+            this.staticType = staticType;
+            this.animateUrl = animateUrl;
+            this.animateType = animateType;
+            this.width = width;
+            this.height = height;
+            this.resourceType = resourceType;
+            this.version = version;
+            this.bizType = bizType;
+            this.lightInteraction = lightInteraction;
+            this.visibleStartTime = visibleStartTime;
+            this.visibleEndTime = visibleEndTime;
+        }
+
+        private boolean isVisibleNow(long nowTs) {
+            if (visibleStartTime != null && nowTs < visibleStartTime) {
+                return false;
+            }
+            if (visibleEndTime != null && nowTs > visibleEndTime) {
+                return false;
+            }
+            return true;
+        }
+    }
 
     private final DouyinConfig config;
     private final HttpClient httpClient;
@@ -58,6 +106,11 @@ public class MessageSender {
                                                        int fileSize, int height, int width, boolean isGroup) {
         Map<String, Object> imageData = createImageMessageContent(md5, skey, oid, fileSize, height, width);
         return sendMessageInternal(conversationId, conversationShortId, null, IMAGE_MESSAGE_TEMPLATE, imageData, isGroup);
+    }
+
+    public CompletableFuture<Boolean> sendDynamicEmojiMessage(String conversationId, Long conversationShortId, String emojiName, boolean isGroup) {
+        Map<String, Object> emojiData = createDynamicEmojiMessageContent(emojiName);
+        return sendMessageInternal(conversationId, conversationShortId, null, IMAGE_MESSAGE_TEMPLATE, emojiData, isGroup, 5);
     }
 
     public CompletableFuture<Boolean> sendVideoCardMessage(String conversationId, Long conversationShortId,
@@ -95,6 +148,13 @@ public class MessageSender {
     private CompletableFuture<Boolean> sendMessageInternal(String conversationId, Long conversationShortId,
                                                            String content, String template,
                                                            Map<String, Object> messageData, boolean isGroup) {
+        return sendMessageInternal(conversationId, conversationShortId, content, template, messageData, isGroup, null);
+    }
+
+    private CompletableFuture<Boolean> sendMessageInternal(String conversationId, Long conversationShortId,
+                                                           String content, String template,
+                                                           Map<String, Object> messageData, boolean isGroup,
+                                                           Integer forcedMessageType) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 // 参数校验
@@ -102,7 +162,7 @@ public class MessageSender {
                 
                 String messageId = UUID.randomUUID().toString();
                 byte[] requestBody = buildRequestBody(conversationId, conversationShortId, messageId,
-                        content, template, messageData, isGroup);
+                        content, template, messageData, isGroup, forcedMessageType);
 
                 HttpRequest request = createHttpRequest(requestBody);
                 HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
@@ -249,8 +309,162 @@ public class MessageSender {
         return imageContent;
     }
 
+    private Map<String, Object> createDynamicEmojiMessageContent(String emojiName) {
+        if (emojiName == null || emojiName.trim().isEmpty()) {
+            throw new DouyinMessageException(ErrorCode.MISSING_PARAMETER, "动态表情名称不能为空");
+        }
+
+        String normalizedEmojiName = emojiName.trim();
+        DynamicEmojiConfig emojiConfig = DYNAMIC_EMOJI_CONFIG_MAP.get(normalizedEmojiName);
+        if (emojiConfig == null) {
+            String available = String.join("、", DYNAMIC_EMOJI_CONFIG_MAP.keySet());
+            throw new DouyinMessageException(ErrorCode.INVALID_PARAMETER,
+                    "不支持的动态表情名称: " + normalizedEmojiName + "，可选: " + available);
+        }
+
+        long nowTs = System.currentTimeMillis() / 1000;
+        if (!emojiConfig.isVisibleNow(nowTs)) {
+            throw new DouyinMessageException(ErrorCode.INVALID_PARAMETER,
+                    "动态表情当前不可用: " + normalizedEmojiName + "，请检查可见时间窗口");
+        }
+
+        String resolvedUri = firstNotBlank(emojiConfig.animateUrl, emojiConfig.staticUrl);
+        if (resolvedUri == null) {
+            throw new DouyinMessageException(ErrorCode.INVALID_PARAMETER,
+                    "动态表情缺少可用URL: " + normalizedEmojiName);
+        }
+
+        String imageType = firstNotBlank(emojiConfig.animateType, emojiConfig.staticType, "png");
+        List<String> urlList = new ArrayList<>();
+        if (emojiConfig.staticUrl != null && !emojiConfig.staticUrl.isEmpty()) {
+            urlList.add(emojiConfig.staticUrl);
+        }
+        if (emojiConfig.animateUrl != null && !emojiConfig.animateUrl.isEmpty() && !emojiConfig.animateUrl.equals(emojiConfig.staticUrl)) {
+            urlList.add(emojiConfig.animateUrl);
+        }
+        if (urlList.isEmpty()) {
+            urlList.add(resolvedUri);
+        }
+
+        Map<String, Object> urlData = new LinkedHashMap<>();
+        urlData.put("height", 0);
+        urlData.put("data_size", 0);
+        urlData.put("uri", resolvedUri);
+        urlData.put("url_list", urlList);
+        urlData.put("width", 0);
+
+        Map<String, Object> emojiContent = new LinkedHashMap<>();
+        emojiContent.put("display_name", emojiConfig.displayName);
+        emojiContent.put("height", emojiConfig.height);
+        emojiContent.put("width", emojiConfig.width);
+        emojiContent.put("image_id", 0);
+        emojiContent.put("image_type", imageType);
+        emojiContent.put("package_id", 0);
+        emojiContent.put("show_notice", false);
+        emojiContent.put("resource_type", emojiConfig.resourceType);
+        emojiContent.put("updateConversationTime", true);
+        emojiContent.put("url", urlData);
+        emojiContent.put("createdAt", 0);
+        emojiContent.put("is_card", false);
+        emojiContent.put("msgHint", "");
+        emojiContent.put("aweType", 507);
+        emojiContent.put("version", emojiConfig.version);
+        emojiContent.put("biz_type", emojiConfig.bizType);
+        if (emojiConfig.lightInteraction != null && !emojiConfig.lightInteraction.isEmpty()) {
+            emojiContent.put("extra", Collections.singletonMap("light_interaction", emojiConfig.lightInteraction));
+        }
+        return emojiContent;
+    }
+
+    private static String firstNotBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    private static Map<String, DynamicEmojiConfig> loadDynamicEmojiConfigMap() {
+        try (InputStream inputStream = MessageSender.class.getClassLoader()
+                .getResourceAsStream(DYNAMIC_EMOJI_CONFIG_RESOURCE)) {
+            if (inputStream == null) {
+                throw new DouyinMessageException(
+                        ErrorCode.CONFIG_MISSING,
+                        "未找到动态表情配置文件: " + DYNAMIC_EMOJI_CONFIG_RESOURCE
+                );
+            }
+
+            String json = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            List<JSONObject> configList = JSON.parseArray(json, JSONObject.class);
+            if (configList == null || configList.isEmpty()) {
+                throw new DouyinMessageException(
+                        ErrorCode.CONFIG_INVALID,
+                        "动态表情配置为空: " + DYNAMIC_EMOJI_CONFIG_RESOURCE
+                );
+            }
+
+            Map<String, DynamicEmojiConfig> map = new LinkedHashMap<>();
+            for (JSONObject item : configList) {
+                String displayName = item.getString("display_name");
+                if (displayName == null || displayName.trim().isEmpty()) {
+                    throw new DouyinMessageException(ErrorCode.CONFIG_INVALID, "动态表情配置缺少 display_name");
+                }
+                String normalizedDisplayName = displayName.trim();
+
+                DynamicEmojiConfig config = new DynamicEmojiConfig(
+                        normalizedDisplayName,
+                        item.getString("static_url"),
+                        item.getString("static_type"),
+                        item.getString("animate_url"),
+                        item.getString("animate_type"),
+                        getRequiredInt(item, "width", normalizedDisplayName),
+                        getRequiredInt(item, "height", normalizedDisplayName),
+                        getRequiredInt(item, "resource_type", normalizedDisplayName),
+                        getRequiredInt(item, "version", normalizedDisplayName),
+                        getRequiredInt(item, "biz_type", normalizedDisplayName),
+                        item.getString("light_interaction"),
+                        item.getLong("visible_start_time"),
+                        item.getLong("visible_end_time")
+                );
+                map.put(config.displayName, config);
+            }
+
+            return Collections.unmodifiableMap(map);
+        } catch (IOException e) {
+            throw new DouyinMessageException(
+                    ErrorCode.SYSTEM_ERROR,
+                    "读取动态表情配置失败: " + DYNAMIC_EMOJI_CONFIG_RESOURCE,
+                    e
+            );
+        } catch (DouyinMessageException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DouyinMessageException(
+                    ErrorCode.CONFIG_INVALID,
+                    "解析动态表情配置失败: " + DYNAMIC_EMOJI_CONFIG_RESOURCE + "，" + e.getMessage(),
+                    e
+            );
+        }
+    }
+
+    private static int getRequiredInt(JSONObject item, String field, String displayName) {
+        Integer value = item.getInteger(field);
+        if (value == null) {
+            throw new DouyinMessageException(
+                    ErrorCode.CONFIG_INVALID,
+                    "动态表情配置缺少字段 " + field + "，表情: " + displayName
+            );
+        }
+        return value;
+    }
+
     private byte[] buildRequestBody(String conversationId, Long conversationShortId, String messageId,
-                                    String content, String template, Map<String, Object> messageData, boolean isGroup) {
+                                    String content, String template, Map<String, Object> messageData, boolean isGroup,
+                                    Integer forcedMessageType) {
         try {
             DySendMsgRequestOuterClass.DySendMsgRequest sendMsgRequest =
                     DySendMsgRequestOuterClass.DySendMsgRequest.parseFrom(
@@ -265,6 +479,9 @@ public class MessageSender {
             contentBuilder.setConversationId(conversationId);
             contentBuilder.setConversationShortId(conversationShortId);
             contentBuilder.setConversationType(isGroup ? 2 : 1);
+            if (forcedMessageType != null) {
+                contentBuilder.setMessageType(forcedMessageType);
+            }
 
             // 设置消息内容
             String contentJson;
@@ -405,3 +622,4 @@ public class MessageSender {
     }
 
 }
+

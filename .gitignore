@@ -33,3 +33,8 @@ build/
 .vscode/
 /src/test/java/
 /src/test/*
+
+.m2/
+.m2link/
+.mvn/
+AGENTS.md

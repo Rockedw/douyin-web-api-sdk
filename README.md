@@ -10,6 +10,7 @@
 
 - 私信发送
 - 图片消息发送
+- 动态表情消息发送（按名称选择）
 - 视频卡片消息发送
 - WebSocket 实时接收消息
 - 陌生人会话拉取
@@ -232,7 +233,28 @@ sdk.sendImageMessage(
 ).get();
 ```
 
-### 5. 发送视频卡片消息
+### 5 发送动态表情包（按名称选择）
+
+```java
+String emojiName = "比心"; // 例如：续火花、比心、摇骰子、猜拳...
+
+boolean success = sdk.sendDynamicEmojiMessage(
+    conversationId,
+    conversationShortId,
+    emojiName,
+    false
+).get();
+
+System.out.println("动态表情发送结果: " + success);
+```
+
+动态表情模板配置在资源文件：
+
+- `src/main/resources/dynamic-emoji-config.json`
+
+> 注意有些表情有时效限制，并不是一直可用，具体见`dynamic-emoji-config.json`
+
+### 6. 发送视频卡片消息
 
 ```java
 sdk.sendVideoCardMessage(
@@ -243,7 +265,7 @@ sdk.sendVideoCardMessage(
 ).get();
 ```
 
-### 6. 创建会话与给陌生人发消息
+### 7. 创建会话与给陌生人发消息
 
 如果你已经拿到了对方用户 ID，可以直接建会话：
 
@@ -265,7 +287,7 @@ Map<String, Object> result = sdk.sendMsg2Stranger(
 System.out.println(result);
 ```
 
-### 7. 获取陌生人消息
+### 8. 获取陌生人消息
 
 ```java
 List<StrangerMessageInfo> list = sdk.fetchStrangerMessages(20);
@@ -277,7 +299,7 @@ for (StrangerMessageInfo item : list) {
 }
 ```
 
-### 8. 获取用户信息
+### 9. 获取用户信息
 
 ```java
 import com.dy_web_api.sdk.message.model.UserInfo;
@@ -291,7 +313,7 @@ System.out.println("粉丝数: " + userInfo.getFollowerCount());
 System.out.println("作品数: " + userInfo.getAwemeCount());
 ```
 
-### 9. 获取用户作品
+### 10. 获取用户作品
 
 获取默认数量：
 
@@ -322,7 +344,7 @@ System.out.println("实际获取数量: " + response.getAwemeList().size());
 UserPostResponse page2 = sdk.getUserPostsByPage("MS4wLjABAAAA...", 2, 20);
 ```
 
-### 10. 发送视频评论
+### 11. 发送视频评论
 
 纯文本评论：
 
@@ -366,7 +388,7 @@ String commentId = sdk.uploadImageAndCommentVideo(
 );
 ```
 
-### 11. 获取视频评论列表
+### 12. 获取视频评论列表
 
 默认读取第一页：
 
@@ -384,7 +406,7 @@ System.out.println("总数: " + response.getTotal());
 System.out.println("是否还有更多: " + response.isHasMore());
 ```
 
-### 12. 主动断开连接
+### 13. 主动断开连接
 
 ```java
 sdk.disconnect().get();

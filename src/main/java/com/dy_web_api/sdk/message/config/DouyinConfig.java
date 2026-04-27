@@ -10,7 +10,7 @@ import lombok.Data;
  *
  * <p>注释中的“用途”基于当前代码实现的真实引用关系整理：
  * <ul>
- *     <li>私信发送：sendMessage / sendImageMessage / sendVideoCardMessage / createConversation / sendMsg2Stranger</li>
+ *     <li>私信发送：sendMessage / sendImageMessage / sendDynamicEmojiMessage / sendVideoCardMessage / createConversation / sendMsg2Stranger</li>
  *     <li>消息接收：connect（WebSocket）</li>
  *     <li>陌生人消息：fetchStrangerMessages</li>
  *     <li>用户信息：getUserInfo</li>

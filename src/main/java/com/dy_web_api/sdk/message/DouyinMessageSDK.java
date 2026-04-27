@@ -140,6 +140,13 @@ public class DouyinMessageSDK implements AutoCloseable {
         return messageSender.sendImageMessage(conversationId, conversationShortId, md5, skey, oid, fileSize , height, width, isGroup);
     }
 
+    /**
+     * 发送动态表情消息（按表情名选择模板）
+     */
+    public CompletableFuture<Boolean> sendDynamicEmojiMessage(String conversationId, Long conversationShortId, String emojiName, boolean isGroup) {
+        return messageSender.sendDynamicEmojiMessage(conversationId, conversationShortId, emojiName, isGroup);
+    }
+
     public CompletableFuture<Boolean> sendVideoCardMessage(String conversationId, Long conversationShortId,
                                                            String itemId, boolean isGroup) {
         return messageSender.sendVideoCardMessage(conversationId, conversationShortId, itemId, isGroup);
